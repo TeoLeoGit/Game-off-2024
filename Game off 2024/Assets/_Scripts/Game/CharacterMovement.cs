@@ -20,7 +20,7 @@ public class CharacterMovement : MonoBehaviour
 
     private int _currentState;
     private float _lockedTill;
-    private float _walkAnimTime = 0.15f;
+    private float _walkAnimTime = 0.12f;
 
     private static readonly int Idle = Animator.StringToHash("Player_idle");
     private static readonly int Walk = Animator.StringToHash("Player_walk");

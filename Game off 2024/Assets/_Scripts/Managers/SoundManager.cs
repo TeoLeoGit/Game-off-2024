@@ -8,14 +8,14 @@ public class SoundManager : MonoBehaviour
     [SerializeField] AudioClip _clipHurt;
     [SerializeField] AudioClip _clipBackground;
     [SerializeField] AudioClip _clipHome;
-    [SerializeField] AudioClip _clipExplode;
-
+    [SerializeField] AudioClip _clipBossChase;
 
     [SerializeField] AudioClip _clipWin;
 
     [SerializeField] GameObject _audioSource;
 
     private AudioSource _bgSource;
+    private AudioSource _bossChaseSource;
 
     private void Awake()
     {
@@ -43,9 +43,6 @@ public class SoundManager : MonoBehaviour
             case SoundType.Hurt:
                 audioSource.clip = _clipHurt;
                 break;
-            case SoundType.Explode:
-                audioSource.clip = _clipExplode;
-                break;
             case SoundType.Win:
                 audioSource.clip = _clipWin;
                 break;
@@ -54,13 +51,19 @@ public class SoundManager : MonoBehaviour
                 audioSource.loop = true;
                 audioSource.clip = _clipBackground;
                 break;
+            case SoundType.BossChase:
+                _bossChaseSource = audioSource;
+                audioSource.loop = true;
+                audioSource.clip = _clipBossChase;
+                break;
             case SoundType.Home:
                 audioSource.loop = true;
                 audioSource.clip = _clipHome;
                 break;
         }
         audioSource.Play();
-        StartCoroutine(IDestroySource(audioSource));
+        if (!audioSource.loop) 
+            StartCoroutine(IDestroySource(audioSource));
     }
 
     IEnumerator IDestroySource(AudioSource s)
@@ -80,6 +83,9 @@ public class SoundManager : MonoBehaviour
             case SoundType.Background:
                 Destroy(_bgSource.gameObject);
                 break;
+            case SoundType.BossChase:
+                Destroy(_bossChaseSource.gameObject);
+                break;
         }
     }
 }
@@ -92,5 +98,5 @@ public enum SoundType
     Win = 3,
     Home = 4,
     Hurt = 5,
-    Explode = 6,
+    BossChase = 6
 }

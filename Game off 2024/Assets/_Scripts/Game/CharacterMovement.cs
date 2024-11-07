@@ -11,7 +11,10 @@ public class CharacterMovement : MonoBehaviour
     public float cellSize = 1f; // Size of each cell
 
     [SerializeField] LayerMask _blockingMask;
+
     private bool _isMoving = false;
+    private bool _isMovingUp = false;
+    private bool _isMovingDown = false;
     private Vector2 _gizmos;
     private Vector3 targetPosition;
     private Animator _anim;
@@ -21,9 +24,13 @@ public class CharacterMovement : MonoBehaviour
     private int _currentState;
     private float _lockedTill;
     private float _walkAnimTime = 0.12f;
+    private float _walkUpAnimTime = 0.15f;
+    private float _walkDownAnimTime = 0.15f;
 
     private static readonly int Idle = Animator.StringToHash("Player_idle");
-    private static readonly int Walk = Animator.StringToHash("Player_walk");
+    private static readonly int WalkHorizontal = Animator.StringToHash("Player_walk");
+    private static readonly int WalkUp = Animator.StringToHash("Player_walk_up");
+    private static readonly int WalkDown = Animator.StringToHash("Player_walk_down");
     private static readonly int Attack = Animator.StringToHash("Attack");
 
     #endregion
@@ -50,12 +57,16 @@ public class CharacterMovement : MonoBehaviour
             if (!CanMove((Vector2.up))) return;
             gridPosition.y += 1;
             _isMoving = true;
+            _isMovingUp = true;
+            _isMovingDown = false;
         }
         else if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
         {
             if (!CanMove((Vector2.down))) return;
             gridPosition.y -= 1;
             _isMoving = true;
+            _isMovingUp = false;
+            _isMovingDown = true;
         }
         else if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
@@ -63,6 +74,8 @@ public class CharacterMovement : MonoBehaviour
             transform.localScale = Vector3.one + Vector3.left * 2;
             gridPosition.x -= 1;
             _isMoving = true;
+            _isMovingUp = false;
+            _isMovingDown = false;
         }
         else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
         {
@@ -70,6 +83,8 @@ public class CharacterMovement : MonoBehaviour
             transform.localScale = Vector3.one;
             gridPosition.x += 1;
             _isMoving = true;
+            _isMovingUp = false;
+            _isMovingDown = false;
         }
 
         if (_isMoving)
@@ -125,7 +140,14 @@ public class CharacterMovement : MonoBehaviour
         if (Time.time < _lockedTill) return _currentState;
 
         // Priorities
-        if (_isMoving) return LockState(Walk, _walkAnimTime);
+
+        if (_isMoving)
+        {
+            if (_isMovingUp) return LockState(WalkUp, _walkUpAnimTime);
+            if (_isMovingDown) return LockState(WalkDown, _walkDownAnimTime);
+
+            return LockState(WalkHorizontal, _walkAnimTime);
+        }
         return Idle;
 
         int LockState(int s, float t)

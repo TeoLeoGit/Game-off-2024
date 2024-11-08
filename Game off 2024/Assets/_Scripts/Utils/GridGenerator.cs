@@ -1,16 +1,14 @@
-using Microsoft.Unity.VisualStudio.Editor;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using static GridGeneratorEditor;
 
 public class GridGenerator : MonoBehaviour
 {
     public PathFinder pathFinder;
     public Cell cellPrefab; // Prefab for each grid cell
     public Dictionary<Vector2, PathNode> _pathNodeMap = new();
-    public Dictionary<Vector2, Cell> _test = new();
+    public Dictionary<Vector2, Cell> _visualizeCells = new();
     public int columns = 9;
     public int rows = 9;
 
@@ -22,7 +20,7 @@ public class GridGenerator : MonoBehaviour
             DestroyImmediate(child.gameObject);
         }
         _pathNodeMap.Clear();
-        _test.Clear();
+        _visualizeCells.Clear();
 
         // Generate grid
         for (int x = 0; x < columns; x++)
@@ -34,7 +32,7 @@ public class GridGenerator : MonoBehaviour
                 instant.SetCell(x, y);
                 var pathNode = new PathNode(x, y);
                 _pathNodeMap.Add(position, pathNode);
-                _test.Add(position, instant);
+                _visualizeCells.Add(position, instant);
             }
         }
     }
@@ -57,13 +55,13 @@ public class GridGenerator : MonoBehaviour
         {
             var pos = new Vector2(Random.Range(0, rows), Random.Range(0, columns));
             _pathNodeMap[pos].isWall = true;
-            _test[pos].IsWall = true;
+            _visualizeCells[pos].IsWall = true;
         }
 
         var result = pathFinder.FindPath(new Vector2(0, 1), new Vector2(8, 6));
         foreach (var item in result)
         {
-            _test[new Vector2(item.x, item.y)].IsPath = true;
+            _visualizeCells[new Vector2(item.x, item.y)].IsPath = true;
         }
     }
 
@@ -93,12 +91,19 @@ public class GridGeneratorEditor : Editor
                 DestroyImmediate(child.gameObject);
             }
             gridGenerator._pathNodeMap.Clear();
-            gridGenerator._test.Clear();
+            gridGenerator._visualizeCells.Clear();
         }
-
         if (GUILayout.Button("FIND PATH"))
         {
             gridGenerator.TestPath();
+        }
+        if (GUILayout.Button("REMOVE VISUALIZE"))
+        {
+            foreach (Transform child in gridGenerator.transform)
+            {
+                DestroyImmediate(child.gameObject);
+                gridGenerator._visualizeCells.Clear();
+            }
         }
     }
 }

@@ -69,24 +69,25 @@ public class PathFinder : MonoBehaviour
         return null;
     }
 
+    //Remove comment to allow diagonal movement.
     private List<PathNode> SearchNodeNeighbors(PathNode nodeToSearch)
     {
         List<PathNode> neighborNodes = new List<PathNode>();
         if (nodeToSearch.x >= 1)
         {
             neighborNodes.Add(_gridGenerator.GetNodeAtGrid(nodeToSearch.x - 1, nodeToSearch.y));
-            if (nodeToSearch.y >= 1)
+            /*if (nodeToSearch.y >= 1)
                 neighborNodes.Add(_gridGenerator.GetNodeAtGrid(nodeToSearch.x - 1, nodeToSearch.y - 1));
             if (nodeToSearch.y < _gridGenerator.columns - 1)
-                neighborNodes.Add(_gridGenerator.GetNodeAtGrid(nodeToSearch.x - 1, nodeToSearch.y + 1));
+                neighborNodes.Add(_gridGenerator.GetNodeAtGrid(nodeToSearch.x - 1, nodeToSearch.y + 1));*/
         }
         if (nodeToSearch.x < _gridGenerator.rows - 1)
         {
             neighborNodes.Add(_gridGenerator.GetNodeAtGrid(nodeToSearch.x + 1, nodeToSearch.y));
-            if (nodeToSearch.y >= 1)
+            /*if (nodeToSearch.y >= 1)
                 neighborNodes.Add(_gridGenerator.GetNodeAtGrid(nodeToSearch.x + 1, nodeToSearch.y - 1));
             if (nodeToSearch.y < _gridGenerator.columns - 1)
-                neighborNodes.Add(_gridGenerator.GetNodeAtGrid(nodeToSearch.x + 1, nodeToSearch.y + 1));
+                neighborNodes.Add(_gridGenerator.GetNodeAtGrid(nodeToSearch.x + 1, nodeToSearch.y + 1));*/
         }
         if (nodeToSearch.y >= 1)
             neighborNodes.Add(_gridGenerator.GetNodeAtGrid(nodeToSearch.x, nodeToSearch.y - 1));

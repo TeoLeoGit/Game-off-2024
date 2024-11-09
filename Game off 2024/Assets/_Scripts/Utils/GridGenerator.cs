@@ -59,6 +59,7 @@ public class GridGenerator : MonoBehaviour
         }
 
         var result = pathFinder.FindPath(new Vector2(0, 1), new Vector2(8, 6));
+        if (result != null)
         foreach (var item in result)
         {
             _visualizeCells[new Vector2(item.x, item.y)].IsPath = true;

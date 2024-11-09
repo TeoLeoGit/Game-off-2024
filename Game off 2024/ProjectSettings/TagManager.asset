@@ -47,3 +47,6 @@ TagManager:
   - name: Object
     uniqueID: 536244127
     locked: 0
+  - name: DebugLayer
+    uniqueID: 2644091307
+    locked: 0

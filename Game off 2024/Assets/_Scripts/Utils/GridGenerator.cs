@@ -1,16 +1,28 @@
+using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class GridGenerator : MonoBehaviour
 {
     public PathFinder pathFinder;
     public Cell cellPrefab; // Prefab for each grid cell
+    public List<PathNode> pathNodes = new();
+
     public Dictionary<Vector2, PathNode> _pathNodeMap = new();
     public Dictionary<Vector2, Cell> _visualizeCells = new();
     public int columns = 9;
     public int rows = 9;
+    private void Awake()
+    {
+        foreach (var node in pathNodes)
+        {
+            _pathNodeMap.Add(new Vector2(node.x, node.y), node);
+        }
+    }
 
     public void GenerateGrid()
     {
@@ -21,18 +33,20 @@ public class GridGenerator : MonoBehaviour
         }
         _pathNodeMap.Clear();
         _visualizeCells.Clear();
+        pathNodes.Clear();
 
         // Generate grid
         for (int x = 0; x < columns; x++)
         {
             for (int y = 0; y < rows; y++)
             {
-                Vector3 position = new Vector3(x, y, 0);
+                Vector2 position = new Vector3(x, y);
                 var instant = Instantiate(cellPrefab, position, Quaternion.identity, transform);
-                instant.SetCell(x, y);
+                instant.SetCell(x, y, this);
                 var pathNode = new PathNode(x, y);
                 _pathNodeMap.Add(position, pathNode);
                 _visualizeCells.Add(position, instant);
+                pathNodes.Add(pathNode);
             }
         }
     }
@@ -53,7 +67,7 @@ public class GridGenerator : MonoBehaviour
         //Generate wall
         for (int i = 0; i < 20; i++)
         {
-            var pos = new Vector2(Random.Range(0, rows), Random.Range(0, columns));
+            var pos = new Vector2(UnityEngine.Random.Range(0, columns), UnityEngine.Random.Range(0, rows));
             _pathNodeMap[pos].isWall = true;
             _visualizeCells[pos].IsWall = true;
         }
@@ -93,6 +107,7 @@ public class GridGeneratorEditor : Editor
             }
             gridGenerator._pathNodeMap.Clear();
             gridGenerator._visualizeCells.Clear();
+            gridGenerator.pathNodes.Clear();
         }
         if (GUILayout.Button("FIND PATH"))
         {
@@ -109,6 +124,7 @@ public class GridGeneratorEditor : Editor
     }
 }
 
+[Serializable]
 public class PathNode
 {
     public int x;

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BossMovement : MonoBehaviour
@@ -8,35 +9,45 @@ public class BossMovement : MonoBehaviour
     public Vector2 gridPosition = new Vector2(0, 0); // Initial grid position
     public float cellSize = 1f; // Size of each cell
 
-    [SerializeField] LayerMask _blockingMask;
-
-    private bool _isMoving = false;
+    private bool _isMovingRight = false;
+    private bool _isMovingLeft = false;
     private bool _isMovingUp = false;
     private bool _isMovingDown = false;
-    private Vector2 _gizmos;
-    private Vector3 targetPosition;
+
+    private Vector2 _playerGridPos;
+    private Vector2 _targetPosition;
     private Animator _anim;
+    private List<PathNode> _pathToPlayer;
 
     #region Cached Properties
 
     private int _currentState;
     private float _lockedTill;
-    private float _walkAnimTime = 0.12f;
-    private float _walkUpAnimTime = 0.15f;
-    private float _walkDownAnimTime = 0.15f;
+    private float _walkRightAnimTime = 0.25f;
+    private float _walkLeftAnimTime = 0.25f;
+    private float _walkUpAnimTime = 0.25f;
+    private float _walkDownAnimTime = 0.25f;
 
-    private static readonly int Idle = Animator.StringToHash("Player_idle");
-    private static readonly int WalkHorizontal = Animator.StringToHash("Player_walk");
-    private static readonly int WalkUp = Animator.StringToHash("Player_walk_up");
-    private static readonly int WalkDown = Animator.StringToHash("Player_walk_down");
-    private static readonly int Attack = Animator.StringToHash("Attack");
+    private static readonly int Idle = Animator.StringToHash("Boss_idle");
+    private static readonly int WalkLeft = Animator.StringToHash("Boss_walk_left");
+    private static readonly int WalkRight = Animator.StringToHash("Boss_walk_right");
+    private static readonly int WalkUp = Animator.StringToHash("Boss_walk_up");
+    private static readonly int WalkDown = Animator.StringToHash("Boss_walk_down");
 
     #endregion
 
     private void Awake()
     {
+        GameController.OnPlayerPositionUpdate += UpdatePath;
+
+        _targetPosition = transform.position;
         _anim = GetComponentInChildren<Animator>();
-        gridPosition = new Vector2(transform.position.x, transform.position.y);
+        //gridPosition = new Vector2(transform.position.x, transform.position.y);
+    }
+
+    private void OnDestroy()
+    {
+        GameController.OnPlayerPositionUpdate -= UpdatePath;
     }
 
     void Update()
@@ -45,72 +56,77 @@ public class BossMovement : MonoBehaviour
         AnimateBoss();
     }
 
-    void UpdatePath()
+    void UpdatePath(Vector2 playerNewPos)
     {
-        if (_isMoving) return;
-
-        {
-            if (!CanMove((Vector2.up))) return;
-            gridPosition.y += 1;
-            _isMoving = true;
-            _isMovingUp = true;
-            _isMovingDown = false;
-        }
-        {
-            if (!CanMove((Vector2.down))) return;
-            gridPosition.y -= 1;
-            _isMoving = true;
-            _isMovingUp = false;
-            _isMovingDown = true;
-        }
-        {
-            if (!CanMove((Vector2.left))) return;
-            transform.localScale = Vector3.one + Vector3.left * 2;
-            gridPosition.x -= 1;
-            _isMoving = true;
-            _isMovingUp = false;
-            _isMovingDown = false;
-        }
-        {
-            if (!CanMove((Vector2.right))) return;
-            transform.localScale = Vector3.one;
-            gridPosition.x += 1;
-            _isMoving = true;
-            _isMovingUp = false;
-            _isMovingDown = false;
-        }
-
-        if (_isMoving)
-        {
-            SetTargetPosition();
-        }
+        if (playerNewPos == _playerGridPos) return;
+        _playerGridPos = playerNewPos;
+        _pathToPlayer = GameController.RequestPathToPosition(gridPosition, playerNewPos);
     }
 
     void MoveBoss()
     {
-        if (!_isMoving) return;
+        if (_pathToPlayer == null) return;
 
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
-
-        if (Vector3.Distance(transform.position, targetPosition) < 0.01f)
+        transform.position = Vector3.MoveTowards(transform.position, _targetPosition, moveSpeed * Time.deltaTime);
+        if (Vector3.Distance(transform.position, _targetPosition) < 0.01f)
         {
-            transform.position = targetPosition;
-            _isMoving = false;
+            transform.position = _targetPosition;
+            GameController.CallOnReachPathNode(gridPosition);
+            if (_pathToPlayer.Count == 0)
+            {
+                _pathToPlayer = null;
+                _isMovingRight = false;
+                _isMovingLeft = false;
+                _isMovingDown = false;
+                _isMovingUp = false;
+                return;
+            }
+
+            //Move next
+            var nextnode = _pathToPlayer.First();
+            var horizonDir = nextnode.x - gridPosition.x;
+            var verticalDir = nextnode.y - gridPosition.y;
+            if (horizonDir < 0) //Left
+            {
+                gridPosition.x -= 1;
+                _isMovingRight = false;
+                _isMovingLeft = true;
+                _isMovingUp = false;
+                _isMovingDown = false;
+                _targetPosition = new Vector2(_targetPosition.x - cellSize, _targetPosition.y);
+            }
+            else if (horizonDir > 0) //Right
+            {
+                gridPosition.x += 1;
+                _isMovingRight = true;
+                _isMovingLeft = false;
+                _isMovingUp = false;
+                _isMovingDown = false;
+                _targetPosition = new Vector2(_targetPosition.x + cellSize, _targetPosition.y);
+            }
+            else if (verticalDir > 0) //Up
+            {
+                gridPosition.y += 1;
+                _isMovingRight = false;
+                _isMovingLeft = false;
+                _isMovingUp = true;
+                _isMovingDown = false;
+                _targetPosition = new Vector2(_targetPosition.x, _targetPosition.y + cellSize);
+            }
+            else if (verticalDir < 0) //Down
+            {
+                gridPosition.y -= 1;
+                _isMovingRight = false;
+                _isMovingLeft = false;
+                _isMovingUp = false;
+                _isMovingDown = true;
+                _targetPosition = new Vector2(_targetPosition.x, _targetPosition.y - cellSize);
+            }
+            _pathToPlayer.RemoveAt(0);
         }
     }
 
-    void SetTargetPosition()
-    {
-        targetPosition = new Vector3(gridPosition.x * cellSize, gridPosition.y * cellSize, 0);
-    }
-
-    public bool CanMove(Vector3 direction)
-    {
-        var hits = Physics2D.RaycastAll(transform.position, direction, 1, _blockingMask);
-        _gizmos = transform.position + direction;
-
-        return hits.Length == 0;
-    }
+   
 
     #region Animations
 
@@ -127,16 +143,12 @@ public class BossMovement : MonoBehaviour
         if (Time.time < _lockedTill) return _currentState;
 
         // Priorities
+        if (_isMovingLeft) return LockState(WalkLeft, _walkLeftAnimTime);
+        if (_isMovingRight) return LockState(WalkRight, _walkRightAnimTime);
+        if (_isMovingUp) return LockState(WalkUp, _walkUpAnimTime);
+        if (_isMovingDown) return LockState(WalkDown, _walkDownAnimTime);
 
-        if (_isMoving)
-        {
-            if (_isMovingUp) return LockState(WalkUp, _walkUpAnimTime);
-            if (_isMovingDown) return LockState(WalkDown, _walkDownAnimTime);
-
-            return LockState(WalkHorizontal, _walkAnimTime);
-        }
         return Idle;
-
         int LockState(int s, float t)
         {
             _lockedTill = Time.time + t;

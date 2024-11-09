@@ -38,7 +38,16 @@ public class CharacterMovement : MonoBehaviour
     private void Awake()
     {
         _anim = GetComponentInChildren<Animator>();
-        gridPosition = new Vector2(transform.position.x, transform.position.y);
+        //gridPosition = new Vector2(transform.position.x, transform.position.y);
+    }
+
+    private IEnumerator Start()
+    {
+        yield return null;
+        yield return null;
+        yield return null;
+
+        targetPosition = transform.position;
     }
 
     void Update()
@@ -59,6 +68,8 @@ public class CharacterMovement : MonoBehaviour
             _isMoving = true;
             _isMovingUp = true;
             _isMovingDown = false;
+            targetPosition = new Vector3(targetPosition.x, targetPosition.y + cellSize);
+
         }
         else if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
         {
@@ -67,6 +78,7 @@ public class CharacterMovement : MonoBehaviour
             _isMoving = true;
             _isMovingUp = false;
             _isMovingDown = true;
+            targetPosition = new Vector3(targetPosition.x, targetPosition.y - cellSize);
         }
         else if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
@@ -76,6 +88,7 @@ public class CharacterMovement : MonoBehaviour
             _isMoving = true;
             _isMovingUp = false;
             _isMovingDown = false;
+            targetPosition = new Vector3(targetPosition.x - cellSize, targetPosition.y);
         }
         else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
         {
@@ -85,11 +98,7 @@ public class CharacterMovement : MonoBehaviour
             _isMoving = true;
             _isMovingUp = false;
             _isMovingDown = false;
-        }
-
-        if (_isMoving)
-        {
-            SetTargetPosition();
+            targetPosition = new Vector3(targetPosition.x + cellSize, targetPosition.y);
         }
     }
 
@@ -102,13 +111,9 @@ public class CharacterMovement : MonoBehaviour
         if (Vector3.Distance(transform.position, targetPosition) < 0.01f)
         {
             transform.position = targetPosition;
+            GameController.CallOnPlayerPositonUpdate(gridPosition);
             _isMoving = false;
         }
-    }
-
-    void SetTargetPosition()
-    {
-        targetPosition = new Vector3(gridPosition.x * cellSize, gridPosition.y * cellSize, 0);
     }
 
     public bool CanMove(Vector3 direction)

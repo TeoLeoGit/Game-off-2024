@@ -8,6 +8,11 @@ public class PathFinder : MonoBehaviour
     private const int MOVE_DIAGONAL_WEIGHT = 14;
     [SerializeField] GridGenerator _gridGenerator;
 
+    private void Awake()
+    {
+        GameController.SetGamePathFinder(this);
+    }
+
     private int CalculateDistance(PathNode node1, PathNode node2)
     {
         int x = Mathf.Abs(node1.x - node2.y);
@@ -81,7 +86,7 @@ public class PathFinder : MonoBehaviour
             if (nodeToSearch.y < _gridGenerator.columns - 1)
                 neighborNodes.Add(_gridGenerator.GetNodeAtGrid(nodeToSearch.x - 1, nodeToSearch.y + 1));*/
         }
-        if (nodeToSearch.x < _gridGenerator.rows - 1)
+        if (nodeToSearch.x < _gridGenerator.columns - 1)
         {
             neighborNodes.Add(_gridGenerator.GetNodeAtGrid(nodeToSearch.x + 1, nodeToSearch.y));
             /*if (nodeToSearch.y >= 1)
@@ -91,7 +96,7 @@ public class PathFinder : MonoBehaviour
         }
         if (nodeToSearch.y >= 1)
             neighborNodes.Add(_gridGenerator.GetNodeAtGrid(nodeToSearch.x, nodeToSearch.y - 1));
-        if (nodeToSearch.y <= _gridGenerator.columns - 1)
+        if (nodeToSearch.y < _gridGenerator.rows - 1)
             neighborNodes.Add(_gridGenerator.GetNodeAtGrid(nodeToSearch.x, nodeToSearch.y + 1));
         return neighborNodes;
     }

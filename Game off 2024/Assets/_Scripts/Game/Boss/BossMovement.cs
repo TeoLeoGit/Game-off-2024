@@ -66,6 +66,7 @@ public class BossMovement : MonoBehaviour
     void MoveBoss()
     {
         if (_pathToPlayer == null) return;
+        MainController.PlaySound(SoundType.BossChase);
 
         transform.position = Vector3.MoveTowards(transform.position, _targetPosition, moveSpeed * Time.deltaTime);
         if (Vector3.Distance(transform.position, _targetPosition) < 0.01f)

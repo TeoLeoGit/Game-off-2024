@@ -4,65 +4,50 @@ using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
-    [SerializeField] AudioClip _clipWalk;
-    [SerializeField] AudioClip _clipHurt;
-    [SerializeField] AudioClip _clipBackground;
-    [SerializeField] AudioClip _clipHome;
-    [SerializeField] AudioClip _clipBossChase;
+    [SerializeField] private AudioData _data;
+    [SerializeField] private GameObject _audioSource;
 
-    [SerializeField] AudioClip _clipWin;
-
-    [SerializeField] GameObject _audioSource;
-
-    private AudioSource _bgSource;
-    private AudioSource _bossChaseSource;
+    private Dictionary<SoundType, AudioRecord> _mapSound = new();
+    private Dictionary<SoundType, AudioSource> _mapSource = new();
 
     private void Awake()
     {
         MainController.OnPlaySound += PlaySound;
         MainController.OnStopSound += StopSound;
+    }
 
+    private void Start()
+    {
+        foreach(var record in _data.AudioRecords)
+        {
+            _mapSound.Add(record.clipName, record);
+        }
     }
 
     private void OnDestroy()
     {
         MainController.OnPlaySound -= PlaySound;
         MainController.OnStopSound -= StopSound;
-
     }
 
     private void PlaySound(SoundType type)
     {
-        var audioSource = Instantiate(_audioSource).GetComponent<AudioSource>();
-
-        switch (type)
+        AudioSource audioSource;
+        if (_mapSource.ContainsKey(type)) 
         {
-            case SoundType.Walk:
-                audioSource.clip = _clipWalk;
-                break;
-            case SoundType.Hurt:
-                audioSource.clip = _clipHurt;
-                break;
-            case SoundType.Win:
-                audioSource.clip = _clipWin;
-                break;
-            case SoundType.Background:
-                _bgSource = audioSource;
-                audioSource.loop = true;
-                audioSource.clip = _clipBackground;
-                break;
-            case SoundType.BossChase:
-                _bossChaseSource = audioSource;
-                audioSource.loop = true;
-                audioSource.clip = _clipBossChase;
-                break;
-            case SoundType.Home:
-                audioSource.loop = true;
-                audioSource.clip = _clipHome;
-                break;
+            audioSource = _mapSource[type];
         }
-        audioSource.Play();
-        if (!audioSource.loop) 
+        else
+        {
+            audioSource = Instantiate(_audioSource).GetComponent<AudioSource>();
+            if (_mapSound[type].isLoop) _mapSource.Add(type, audioSource);
+        }
+        audioSource.clip = _mapSound[type].audioClip;
+        audioSource.loop = _mapSound[type].isLoop;
+
+        if (!audioSource.isPlaying)
+            audioSource.Play();
+        if (!audioSource.loop)
             StartCoroutine(IDestroySource(audioSource));
     }
 
@@ -78,25 +63,12 @@ public class SoundManager : MonoBehaviour
 
     void StopSound(SoundType type)
     {
-        switch (type)
+        if (_mapSource.ContainsKey(type))
         {
-            case SoundType.Background:
-                Destroy(_bgSource.gameObject);
-                break;
-            case SoundType.BossChase:
-                Destroy(_bossChaseSource.gameObject);
-                break;
+            _mapSource[type].Stop();
         }
     }
 }
 
 
-public enum SoundType
-{
-    Walk = 1,
-    Background = 2,
-    Win = 3,
-    Home = 4,
-    Hurt = 5,
-    BossChase = 6
-}
+

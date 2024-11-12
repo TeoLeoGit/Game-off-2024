@@ -61,3 +61,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mapData: {fileID: 11400000, guid: 59ecbac32dc35e34da5ff37687586aa8, type: 2}
   _gameContainer: {fileID: 0}
+  _playerPrefab: {fileID: 8737668946283670640, guid: 672eb768bb37be44fa5c95be90ef91ac, type: 3}

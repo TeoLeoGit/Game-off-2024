@@ -7,11 +7,17 @@ public class GameManager : MonoBehaviour
     [SerializeField] MapData _mapData;
     [SerializeField] Transform _gameContainer;
 
+    [Space(20)]
+
+    [Header("Instantiate preferences")]
+    [SerializeField] GameObject _playerPrefab;
+
     private Dictionary<int, MapInfo> _mapInfos = new();
     private Dictionary<int, GameObject> _instantiatedMap = new();
 
     //Caching
     private GameObject _currentActiveMap;
+    private GameObject _player;
 
     private void Awake()
     {
@@ -43,5 +49,14 @@ public class GameManager : MonoBehaviour
         _currentActiveMap?.SetActive(false);
         InstantiateMap(mapId);
         _instantiatedMap[mapId].SetActive(true);
+    }
+
+    private void MovePlayerToMap(int mapId)
+    {
+        if (_player == null)
+        {
+            _player = Instantiate(_playerPrefab, _gameContainer);
+        }
+
     }
 }

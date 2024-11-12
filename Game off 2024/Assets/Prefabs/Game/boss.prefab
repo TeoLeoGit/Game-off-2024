@@ -200,7 +200,7 @@ GameObject:
   - component: {fileID: 1479835573001093709}
   - component: {fileID: 5520352844817764659}
   m_Layer: 0
-  m_Name: boss
+  m_Name: Boss
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -235,7 +235,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ae99e0acab19654db39175b65f3c37b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 6
+  moveSpeed: 10
   gridPosition: {x: 0, y: 0}
   cellSize: 1
 --- !u!61 &5520352844817764659

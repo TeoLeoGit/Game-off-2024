@@ -5,8 +5,8 @@ public class MainController
     public static event Action<SoundType> OnPlaySound;
     public static event Action<SoundType> OnStopSound;
     public static event Action OnEndGame;
-    public static event Action OnNewGame;
-    public static event Action OnReturnHome;
+    public static event Action OnPlayGame;
+    public static event Action OnShowHome;
     public static event Action OnUpdateLifeView;
 
     public static void PlaySound(SoundType soundType)
@@ -19,14 +19,16 @@ public class MainController
         OnEndGame?.Invoke();
     }
 
-    public static void StartNewGame()
+    public static void StartGame()
     {
-        OnNewGame?.Invoke();
+        OnPlayGame?.Invoke();
+
+        GameController.CallChangeMap(MainModel.CurrentMapId);
     }
 
-    public static void ReturnHome()
+    public static void ShowHome()
     {
-        OnReturnHome?.Invoke();
+        OnShowHome?.Invoke();
     }
 
     public static void UpdateLifeView()

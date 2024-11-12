@@ -12,6 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f61286ac05d06a4694a5bd0ed6003d5, type: 3}
   m_Name: MapData
   m_EditorClassIdentifier: 
-  _levels:
+  _gameMaps:
   - mapId: 1
+    mapPrefab: {fileID: 3765351530336775968, guid: 4b3855cf1a09a44498c14a219892f046, type: 3}
+  - mapId: 2
+    mapPrefab: {fileID: 3765351530336775968, guid: c435cb33f788e2f4b9d9f20fa694590c, type: 3}
+  - mapId: 3
     mapPrefab: {fileID: 3765351530336775968, guid: aee44762bd91a6a458723428e6c33230, type: 3}

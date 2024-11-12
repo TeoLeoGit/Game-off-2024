@@ -6,8 +6,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "MapData", menuName = "ScriptableObjects/MapData")]
 public class MapData : ScriptableObject
 {
-    [SerializeField] private List<MapInfo> _levels;
-    public List<MapInfo> Levels { get { return _levels; } }
+    [SerializeField] private List<MapInfo> _gameMaps;
+    public List<MapInfo> Maps { get { return _gameMaps; } }
 
 }
 

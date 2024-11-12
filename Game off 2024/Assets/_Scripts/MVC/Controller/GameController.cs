@@ -7,11 +7,11 @@ public class GameController
 {
     public static event Action<Vector2> OnPlayerPositionUpdate;
     public static event Action<Vector2> OnPathNodeReach;
+    public static event Action<int, int> OnPlayerEnterMapTrigger;
     public static event Action<int> OnChangeMap;
 
     private static PathFinder _pathFinder;
    
-
     public static List<PathNode> RequestPathToPosition(Vector2 startPos, Vector2 endPos)
     {
         return _pathFinder.FindPath(startPos, endPos);
@@ -35,5 +35,10 @@ public class GameController
     public static void CallChangeMap(int mapId)
     {
         OnChangeMap?.Invoke(mapId);
+    }
+
+    public static void CallPlayerEnterMapTrigger(int mapId, int entranceId)
+    {
+        OnPlayerEnterMapTrigger?.Invoke(mapId, entranceId);
     }
 }

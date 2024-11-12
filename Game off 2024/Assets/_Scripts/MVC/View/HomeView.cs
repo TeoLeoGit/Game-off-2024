@@ -12,18 +12,18 @@ public class HomeView : MonoBehaviour
     {
         _btnPlay.onClick.AddListener(OnStartNewGame);
 
-        MainController.OnReturnHome += OnReturnHome;
+        MainController.OnShowHome += OnReturnHome;
     }
 
     private void OnDestroy()
     {
-        MainController.OnReturnHome -= OnReturnHome;
+        MainController.OnShowHome -= OnReturnHome;
     }
 
     private void OnStartNewGame()
     {
         gameObject.SetActive(false);
-        MainController.StartNewGame();
+        MainController.StartGame();
     }
 
     private void OnReturnHome()

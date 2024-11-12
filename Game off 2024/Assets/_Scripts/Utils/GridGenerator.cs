@@ -84,8 +84,10 @@ public class GridGenerator : MonoBehaviour
     {
         return _pathNodeMap[new Vector2(x, y)];
     }
-
 }
+
+
+#if UNITY_EDITOR
 
 [CustomEditor(typeof(GridGenerator))]
 public class GridGeneratorEditor : Editor
@@ -123,6 +125,8 @@ public class GridGeneratorEditor : Editor
         }
     }
 }
+#endif
+
 
 [Serializable]
 public class PathNode

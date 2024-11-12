@@ -46,7 +46,10 @@ public class Cell : MonoBehaviour
     }*/
 }
 
+#if UNITY_EDITOR
+
 [CustomEditor(typeof(Cell))]
+[CanEditMultipleObjects]
 public class CellEditor : Editor
 {
     public override void OnInspectorGUI()
@@ -66,5 +69,5 @@ public class CellEditor : Editor
     }
 }
 
-
+#endif
 

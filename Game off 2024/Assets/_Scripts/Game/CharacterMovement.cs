@@ -35,6 +35,13 @@ public class CharacterMovement : MonoBehaviour
 
     #endregion
 
+    public void SetPosition(Vector2 worldPos, Vector2 gridPos)
+    {
+        transform.position = worldPos;
+        targetPosition = worldPos;
+        gridPosition = gridPos;
+    }
+
     private void Awake()
     {
         _anim = GetComponentInChildren<Animator>();

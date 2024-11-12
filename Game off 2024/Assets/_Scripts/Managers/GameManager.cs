@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
 
     [Space(20)]
 
-    [Header("Instantiate preferences")]
+    [Header("Instantiate references")]
     [SerializeField] GameObject _playerPrefab;
 
     private Dictionary<int, MapInfo> _mapInfos = new();
@@ -49,6 +49,7 @@ public class GameManager : MonoBehaviour
         _currentActiveMap?.SetActive(false);
         InstantiateMap(mapId);
         _instantiatedMap[mapId].SetActive(true);
+        MovePlayerToMap(mapId);
     }
 
     private void MovePlayerToMap(int mapId)
@@ -58,5 +59,8 @@ public class GameManager : MonoBehaviour
             _player = Instantiate(_playerPrefab, _gameContainer);
         }
 
+        var gridPos = GameController.GetEntranceGridPosition(1, 1);
+        var worldPos = GameController.GetEntranceWorldPosition(1, 1);
+        _player.GetComponent<CharacterMovement>().SetPosition(worldPos, gridPos);
     }
 }

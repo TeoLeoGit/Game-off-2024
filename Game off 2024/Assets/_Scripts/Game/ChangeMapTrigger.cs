@@ -19,6 +19,7 @@ public class ChangeMapTrigger : MonoBehaviour
     {
         //Change map
         Debug.Log("OK!");
-        GameController.CallPlayerEnterMapTrigger(_toMapId, _entranceId);
+        Debug.Log($"Check {_toMapId}, {_entranceId}");
+        GameController.CallStartMap(_toMapId, _entranceId);
     }
 }

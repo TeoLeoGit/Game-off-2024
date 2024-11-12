@@ -23,7 +23,7 @@ public class MainController
     {
         OnPlayGame?.Invoke();
 
-        GameController.CallChangeMap(MainModel.CurrentMapId);
+        GameController.CallStartMap(MainModel.CurrentMapId, 1);
     }
 
     public static void ShowHome()

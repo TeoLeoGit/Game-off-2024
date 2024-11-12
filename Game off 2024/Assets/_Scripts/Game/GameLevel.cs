@@ -7,11 +7,6 @@ public class GameLevel : MonoBehaviour
     [SerializeField] int _mapId;
     [SerializeField] List<ChangeMapTrigger> _entrances;
 
-    private void OnEnable()
-    {
-        GameController.SetGameLevel(this);
-    }
-
     public Vector3 GetWorldPosition(int mapId, int entranceId)
     {
         var match = _entrances.Find(item => item.MapId == mapId && item.EntranceId == entranceId);

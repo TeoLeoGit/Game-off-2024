@@ -8,7 +8,7 @@ public class GameController
     public static event Action<Vector2> OnPlayerPositionUpdate;
     public static event Action<Vector2> OnPathNodeReach;
     public static event Action<int, int> OnPlayerEnterMapTrigger;
-    public static event Action<int> OnChangeMap;
+    public static event Action<int, int> OnStartMap;
     
     //Shared references
     private static PathFinder _pathFinder;
@@ -49,9 +49,9 @@ public class GameController
         OnPathNodeReach?.Invoke(gridPos);
     }
 
-    public static void CallChangeMap(int mapId)
+    public static void CallStartMap(int mapId, int entranceId)
     {
-        OnChangeMap?.Invoke(mapId);
+        OnStartMap?.Invoke(mapId, entranceId);
     }
 
     public static void CallPlayerEnterMapTrigger(int mapId, int entranceId)

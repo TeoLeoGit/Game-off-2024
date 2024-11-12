@@ -21,12 +21,12 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        GameController.OnChangeMap += OnChangeMap;
+        GameController.OnStartMap += OnStartMap;
     }
 
     private void OnDestroy()
     {
-        GameController.OnChangeMap -= OnChangeMap;
+        GameController.OnStartMap -= OnStartMap;
     }
 
     private void Start()
@@ -44,23 +44,25 @@ public class GameManager : MonoBehaviour
         _instantiatedMap.Add(mapId, map);
     }
 
-    private void OnChangeMap(int mapId)
+    private void OnStartMap(int mapId, int entranceId)
     {
         _currentActiveMap?.SetActive(false);
         InstantiateMap(mapId);
         _instantiatedMap[mapId].SetActive(true);
-        MovePlayerToMap(mapId);
+        _currentActiveMap = _instantiatedMap[mapId];
+        GameController.SetGameLevel(_currentActiveMap.GetComponent<GameLevel>());
+        MovePlayerToMap(mapId, entranceId);
     }
 
-    private void MovePlayerToMap(int mapId)
+    private void MovePlayerToMap(int mapId, int entranceId)
     {
         if (_player == null)
         {
             _player = Instantiate(_playerPrefab, _gameContainer);
         }
 
-        var gridPos = GameController.GetEntranceGridPosition(1, 1);
-        var worldPos = GameController.GetEntranceWorldPosition(1, 1);
+        var gridPos = GameController.GetEntranceGridPosition(mapId, entranceId);
+        var worldPos = GameController.GetEntranceWorldPosition(mapId, entranceId);
         _player.GetComponent<CharacterMovement>().SetPosition(worldPos, gridPos);
     }
 }
